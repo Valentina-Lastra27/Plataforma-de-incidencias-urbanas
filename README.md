@@ -10,7 +10,11 @@ El sistema implementa el patrón **Database per Service** (una base de datos ind
 
 ---
 # 📌 Sprints review
-Hoy 29/10 presentamos este readme con el objetivo de avanzar en el codigo, para la siguiente sprint que será el 5/11 donde esperemos que el siguiente commit ya sea de codigo desarrollado de la aplicacion
+29/10: presentamos este readme con el objetivo de avanzar en el codigo, para la siguiente sprint que será el siguiente jueves 
+
+5/11: Codigo ya esquematizado con las entidades ya creadas con sus respectivas caracteristicas y sus DTOs correspondientes, faltan pruebas de Junit y Conexion con Postman 
+
+PROXIMAMENTE 12/11: Proyecto deployado con su documentacion correspondiente y el backtesting mejor realizado
 
 #  Arquitectura del Sistema
 
