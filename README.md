@@ -57,7 +57,7 @@ flowchart LR
     
    classDef default fill:#fff,stroke:#333,stroke-width:2px;
 ```
-## Cómo usar la plataforma
+#📌 Cómo usar la plataforma
 
 ### Requisitos
 
