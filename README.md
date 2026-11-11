@@ -56,5 +56,200 @@ flowchart LR
 
     
    classDef default fill:#fff,stroke:#333,stroke-width:2px;
+```
+## Cómo usar la plataforma
 
+### Requisitos
 
+- Java 25
+- Maven (o el Maven integrado de IntelliJ)
+- Docker Desktop
+
+### 1. Levantar la infraestructura
+
+En la raíz del proyecto:
+
+```bash
+docker compose up -d
+```
+
+Esto crea cinco bases PostgreSQL (una por microservicio) y Kafka. Compruébalo con `docker ps`.
+
+| Base | Puerto en tu PC | Usuario / contraseña |
+|---|---|---|
+| `db_usuarios` | 5433 | postgres / postgres |
+| `db_incidencias` | 5434 | postgres / postgres |
+| `db_asignaciones` | 5435 | postgres / postgres |
+| `db_seguimiento` | 5436 | postgres / postgres |
+| `db_zonas` | 5437 | postgres / postgres |
+
+### 2. Compilar el proyecto
+
+La primera vez hay que instalar el módulo `common`, del que dependen todos los servicios:
+
+```bash
+mvn clean install -DskipTests
+```
+
+En IntelliJ: pestaña **Maven** → proyecto raíz → **Lifecycle** → **install**.
+
+### 3. Ejecutar un microservicio
+
+Ejecuta la clase `...Application` de cada servicio desde IntelliJ (botón verde de play), o con Maven:
+
+```bash
+mvn -pl ms-ciudadanos spring-boot:run
+```
+
+| Servicio | Puerto | Swagger UI |
+|---|---|---|
+| `ms-ciudadanos` | 8081 | http://localhost:8081/swagger-ui.html |
+| `ms-incidencias` | 8082 | http://localhost:8082/swagger-ui.html |
+| `ms-asignaciones` | 8083 | http://localhost:8083/swagger-ui.html |
+| `ms-seguimiento` | 8084 | http://localhost:8084/swagger-ui.html |
+| `ms-zonas` | 8085 | http://localhost:8085/swagger-ui.html |
+| `api-gateway` | 8080 | punto de entrada único: `http://localhost:8080/api/...` |
+
+> **Si usas Windows en Argentina** y ves el error `invalid value for parameter "TimeZone"`, agrega la VM option `-Duser.timezone=America/Argentina/Buenos_Aires` a la configuración de ejecución de cada servicio.
+
+### 4. Probar los endpoints con Swagger
+
+1. Abre la URL de Swagger del servicio.
+2. Despliega un endpoint, por ejemplo `POST /api/ciudadanos`.
+3. Pulsa **Try it out**, edita el JSON y pulsa **Execute**.
+4. Revisa el código de respuesta y el cuerpo devuelto.
+
+También se puede usar Postman o curl contra `http://localhost:808X/api/...` o a través del gateway en el puerto 8080.
+
+### 5. Endpoints principales
+
+| Servicio | Ruta base | Operaciones |
+|---|---|---|
+| Ciudadanos | `/api/ciudadanos` | `POST`, `GET`, `GET /{id}`, `GET /dni/{dni}`, `PUT /{id}`, `DELETE /{id}` |
+| Zonas | `/api/zonas` | `POST`, `GET` (filtro opcional `?codigoPostal=`), `GET /{id}`, `PUT /{id}`, `DELETE /{id}` |
+| Cuadrillas | `/api/cuadrillas` | `POST`, `GET` (filtros `?idZona=&estado=`), `GET /{id}`, `PUT /{id}`, `DELETE /{id}`, `GET /asignacion-sugerida?idZona=&especialidad=`, `POST /{id}/asignar-reporte`, `POST /{id}/liberar-reporte` |
+| Reportes | `/api/reportes` | `POST`, `GET`, `GET /{id}`, `PUT /{id}`, `PATCH /{id}/estado`, `PUT /{id}/cuadrilla`, `DELETE /{id}` |
+| Seguimiento | `/api/seguimientos` | `POST`, `GET`, `GET /{id}`, `GET /reporte/{idReporte}` |
+
+### 6. Ejemplo de flujo completo
+
+Los ids de los pasos siguientes son los que devuelve cada respuesta (en un sistema vacío, `1`).
+
+**a) Crear una zona** (`POST /api/zonas`)
+
+```json
+{
+  "nombre": "Centro",
+  "codigoPostal": "1000",
+  "comuna": "Comuna 1",
+  "limitesGeograficos": "Av. Corrientes, Av. 9 de Julio"
+}
+```
+
+**b) Crear un ciudadano** (`POST /api/ciudadanos`)
+
+```json
+{
+  "nombre": "Lautaro Medina",
+  "email": "lautaro@mail.com",
+  "telefono": "1122334455",
+  "dni": "40123456"
+}
+```
+
+El DNI debe tener 7 u 8 dígitos y el email debe ser válido, si no la API responde `400`.
+
+**c) Crear una cuadrilla** (`POST /api/cuadrillas`)
+
+```json
+{
+  "nombre": "Cuadrilla Bacheo Centro",
+  "especialidad": "BACHEO",
+  "idZona": 1
+}
+```
+
+Especialidades: `BACHEO`, `ALUMBRADO`, `LIMPIEZA`, `ARBOLADO`, `SEMAFORIZACION`. El estado inicial es `DISPONIBLE`.
+
+**d) Crear un reporte** (`POST /api/reportes`)
+
+```json
+{
+  "titulo": "Bache en Av. Corrientes 1234",
+  "descripcion": "Bache profundo que afecta el carril derecho",
+  "tipoIncidencia": "BACHE",
+  "prioridad": "ALTA",
+  "idCiudadano": 1,
+  "idZona": 1
+}
+```
+
+Tipos: `BACHE`, `LUMINARIA`, `BASURA`, `ARBOLADO`, `SEMAFORO`, `AGUA_CLOACAS`, `OTRO`. Prioridades: `BAJA`, `MEDIA` (por defecto), `ALTA`, `CRITICA`. Nace en estado `CREADO`.
+
+**e) Pedir una cuadrilla sugerida** (`GET /api/cuadrillas/asignacion-sugerida?idZona=1&especialidad=BACHEO`)
+
+Devuelve la cuadrilla disponible de esa zona, con preferencia por la especialidad exacta y, en caso de empate, la de menor carga.
+
+**f) Asignar la cuadrilla al reporte** (`PUT /api/reportes/1/cuadrilla`)
+
+```json
+{
+  "idCuadrilla": 1,
+  "usuarioResponsable": "operador1"
+}
+```
+
+**g) Cambiar el estado del reporte** (`PATCH /api/reportes/1/estado`)
+
+```json
+{
+  "nuevoEstado": "EN_PROCESO",
+  "observaciones": "La cuadrilla llegó al lugar",
+  "usuarioResponsable": "operador1"
+}
+```
+
+**h) Consultar el historial** (`GET /api/seguimientos/reporte/1`)
+
+Lista los cambios de estado registrados para ese reporte. Si Kafka está levantado, `ms-seguimiento` los registra solo; también se puede crear un registro a mano con `POST /api/seguimientos`.
+
+### 7. Estados del reporte
+
+`CREADO → ASIGNADO → EN_PROCESO → RESUELTO → CERRADO`, con `RECHAZADO` y reapertura controlada. Una transición no permitida (por ejemplo de `CREADO` a `CERRADO`) devuelve `400`.
+
+### 8. Ver los datos en la base
+
+Desde la terminal:
+
+```bash
+docker exec -it db_usuarios psql -U postgres -d db_usuarios -c "SELECT * FROM ciudadanos;"
+```
+
+O conecta el panel **Database** de IntelliJ (o DBeaver) a `localhost` con el puerto, la base y las credenciales de la tabla del paso 1.
+
+### 9. Ejecutar los tests
+
+```bash
+mvn clean test              # todos los módulos
+mvn -pl ms-ciudadanos test  # un solo servicio
+```
+
+En IntelliJ: clic derecho sobre `src/test` del módulo → **Run 'Tests in ...'**. No necesitan Docker ni bases de datos (usan JUnit 5, Mockito y MockMvc).
+
+### 10. Respuestas de error
+
+| Código | Cuándo ocurre |
+|---|---|
+| `400` | Datos inválidos (validaciones) o transición de estado no permitida |
+| `404` | El recurso con ese id no existe |
+| `409` | Conflicto, por ejemplo un DNI o email duplicado |
+
+### 11. Problemas frecuentes
+
+| Síntoma | Causa y solución |
+|---|---|
+| `Connection to localhost:5433 refused` | Docker Desktop cerrado o contenedores detenidos. Ejecuta `docker compose up -d`. |
+| `Could not find artifact ...:common:jar` | Falta compilar el módulo común. Ejecuta `mvn clean install -DskipTests`. |
+| `invalid value for parameter "TimeZone"` | Agrega la VM option `-Duser.timezone=America/Argentina/Buenos_Aires`. |
+| `Port 808X was already in use` | Ya hay una copia del servicio corriendo. Detenla y vuelve a ejecutar. |
+| `mvn` no se reconoce | Usa el Maven integrado de IntelliJ (pestaña **Maven**) o instala Maven y agrégalo al `Path`. |
