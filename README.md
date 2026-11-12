@@ -14,7 +14,8 @@ El sistema implementa el patrón **Database per Service** (una base de datos ind
 
 5/11: Codigo ya esquematizado con las entidades ya creadas con sus respectivas caracteristicas y sus DTOs correspondientes, faltan pruebas de Junit y Conexion con Postman 
 
-PROXIMAMENTE 12/11: Proyecto deployado con su documentacion correspondiente y el backtesting mejor realizado
+12/11: Pruebas definidas y despliegue de visualizacion de Microservicios con Swagger-UI para verificar el correcto funcionamiento de los endpoints y de los metodos 
+Prueba Final: Intentar deployar proyecto en WEB
 
 #  Arquitectura del Sistema
 
