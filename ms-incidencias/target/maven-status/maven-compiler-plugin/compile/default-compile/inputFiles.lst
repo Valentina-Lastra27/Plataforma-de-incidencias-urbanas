@@ -1,0 +1,13 @@
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\controller\ReporteController.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\dto\AsignarCuadrillaRequestDTO.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\dto\CambioEstadoRequestDTO.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\dto\ReporteRequestDTO.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\dto\ReporteResponseDTO.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\entity\EstadoReporte.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\entity\Prioridad.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\entity\Reporte.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\entity\TipoIncidencia.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\IncidenciasApplication.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\mapper\ReporteMapper.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\repository\ReporteRepository.java
+C:\Users\Administrator\Plataforma-de-incidencias-urbanas\ms-incidencias\src\main\java\com\plataforma\incidencias\service\ReporteService.java
