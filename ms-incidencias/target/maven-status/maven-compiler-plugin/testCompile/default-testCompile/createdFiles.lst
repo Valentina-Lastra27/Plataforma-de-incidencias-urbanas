@@ -1,0 +1,3 @@
+com\plataforma\incidencias\service\ReporteServiceTest.class
+com\plataforma\incidencias\controller\ReporteControllerTest.class
+com\plataforma\incidencias\entity\EstadoReporteTest.class
