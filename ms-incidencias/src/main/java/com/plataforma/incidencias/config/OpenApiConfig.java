@@ -1,0 +1,22 @@
+package com.plataforma.incidencias.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * Metadatos de la documentación OpenAPI (Swagger UI) de ms-incidencias.
+ * UI: http://localhost:8082/swagger-ui.html  |  JSON: http://localhost:8082/v3/api-docs
+ */
+@Configuration
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI().info(new Info()
+                .title("MS Incidencias")
+                .description("Gestión de reportes de incidencias urbanas y sus cambios de estado (db_incidencias)")
+                .version("v1"));
+    }
+}
